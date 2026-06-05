@@ -2,19 +2,19 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/AuthProvider";
+import { useUser } from "@clerk/nextjs";
 
 export function ProtectedRoute({ children }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.replace("/login");
+    if (isLoaded && !isSignedIn) {
+      router.replace("/");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isSignedIn, isLoaded, router]);
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
         <div className="flex flex-col items-center gap-3">
@@ -33,7 +33,7 @@ export function ProtectedRoute({ children }) {
     );
   }
 
-  if (!isAuthenticated) return null;
+  if (!isSignedIn) return null;
 
   return <>{children}</>;
 }

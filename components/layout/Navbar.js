@@ -4,14 +4,16 @@ import { Menu, Sun, Moon, LogOut } from "lucide-react";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
 
 export function Navbar({ onMobileMenuOpen, pageTitle }) {
   const { theme, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
+  const { signOut } = useClerk();
 
   const handleLogout = () => {
-    logout();
+    signOut();
     router.push("/");
   };
 

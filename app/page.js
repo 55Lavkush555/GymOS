@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/AuthProvider";
+import { useUser } from "@clerk/nextjs";
 import { useTheme } from "@/providers/ThemeProvider";
 import {
   Dumbbell, Users, BarChart3, CreditCard, Shield, Zap, Moon, Sun,
   ArrowRight, CheckCircle, TrendingUp, Clock
 } from "lucide-react";
+import { SignInButton, SignUpButton } from "@clerk/nextjs";
 
 const features = [
   {
@@ -57,17 +58,18 @@ const highlights = [
 ];
 
 export default function LandingPage() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace("/dashboard");
+    if (isLoaded && isSignedIn) {
+      router.push("/dashboard");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isLoaded, isSignedIn]);
 
-  if (isLoading) return null;
+
+  if (!isLoaded) return null;
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col">
@@ -87,19 +89,16 @@ export default function LandingPage() {
             >
               {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
             </button>
-            <Link
-              href="/login"
+            <SignInButton mode="modal"
               className="hidden sm:flex items-center px-4 py-2 rounded-lg border border-[var(--border)] text-sm font-medium text-[var(--foreground)] hover:bg-[var(--accent)] transition-colors"
             >
               Login
-            </Link>
-            <Link
-              href="/login"
+            </SignInButton>
+            <SignUpButton mode="modal"
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--primary)] text-white text-sm font-medium hover:bg-[var(--primary-dark)] transition-colors"
             >
               Get Started
-              <ArrowRight size={14} />
-            </Link>
+            </SignUpButton>
           </div>
         </div>
       </header>
@@ -139,19 +138,17 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link
-                href="/login"
+              <SignInButton mode="modal"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-[var(--primary)] text-white font-semibold hover:bg-[var(--primary-dark)] transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 hover:-translate-y-0.5"
               >
                 Get Started Free
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                href="/login"
+                {/* <ArrowRight size={16} /> */}
+              </SignInButton>
+              <SignUpButton mode="modal"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] font-semibold hover:bg-[var(--accent)] transition-all"
               >
                 Login to Dashboard
-              </Link>
+              </SignUpButton>
             </div>
           </div>
         </section>

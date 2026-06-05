@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/AuthProvider";
+import { useClerk } from "@clerk/nextjs";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -27,11 +28,12 @@ const navItems = [
 
 export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
+  const { signOut } = useClerk();
 
   const handleLogout = () => {
-    logout();
+    signOut();
     router.push("/");
     onMobileClose?.();
   };
