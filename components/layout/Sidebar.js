@@ -15,8 +15,9 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/providers/AuthProvider";
 import { useClerk } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -28,9 +29,10 @@ const navItems = [
 
 export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
   const pathname = usePathname();
-  const { user } = useAuth();
   const router = useRouter();
   const { signOut } = useClerk();
+  const { user, isLoaded } = useUser();
+
 
   const handleLogout = () => {
     signOut();
@@ -118,12 +120,10 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
         <div className={cn("border-t border-[var(--sidebar-border)]", collapsed ? "p-2" : "p-3")}>
           {!collapsed ? (
             <div className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-[var(--accent)] transition-colors group">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                {initials}
-              </div>
+              <UserButton afterSignOutUrl="/" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-[var(--foreground)] truncate">{user?.name || "Admin"}</p>
-                <p className="text-[10px] text-[var(--muted-foreground)] truncate">{user?.email || ""}</p>
+                <p className="text-xs font-medium text-[var(--foreground)] truncate">{user?.firstName || "Admin"}</p>
+                <p className="text-[10px] text-[var(--muted-foreground)] truncate">{user?.primaryEmailAddress?.emailAddress || ""}</p>
               </div>
               <button
                 onClick={handleLogout}

@@ -20,16 +20,7 @@ export function StatCard({ title, value, subtitle, icon: Icon, trend, trendLabel
         <div className="flex-1 min-w-0">
           <p className="text-xs sm:text-sm font-medium text-[var(--muted-foreground)] leading-tight">{title}</p>
           <p className="text-xl sm:text-2xl font-bold text-[var(--foreground)] mt-1 tabular-nums leading-none">{value}</p>
-          {(subtitle || trendLabel) && (
-            <p className="text-xs text-[var(--muted-foreground)] mt-1.5 leading-tight">
-              {trend !== undefined && (
-                <span className={cn("font-semibold mr-1", trend >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400")}>
-                  {trend >= 0 ? "+" : ""}{trend}%
-                </span>
-              )}
-              {trendLabel || subtitle}
-            </p>
-          )}
+          
         </div>
         {Icon && (
           <div className={cn("w-9 h-9 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0", colors.bg)}>

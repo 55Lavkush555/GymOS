@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { plans } from "@/lib/mockData";
 
 const defaultForm = {
   name: "",
@@ -13,7 +12,7 @@ const defaultForm = {
   gender: "",
   address: "",
   plan: "",
-  startDate: "",
+  startDate: new Date().toISOString().split("T")[0],
   expiryDate: "",
   notes: "",
 };
@@ -29,20 +28,90 @@ function FormField({ label, children, required }) {
   );
 }
 
+const formatDateForInput = (date) => {
+  return date ? new Date(date).toISOString().split("T")[0] : "";
+};
+
 const inputCls =
   "w-full h-9 px-3 rounded-lg bg-[var(--secondary)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-transparent transition-colors";
 
-export function AddMemberModal({ isOpen, onClose, onAdd, editMember }) {
-  const [form, setForm] = useState(editMember || defaultForm);
+export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange }) {
+  const [form, setForm] = useState(defaultForm);
+
+  useEffect(() => {
+    if (editMember) {
+      setForm({
+        ...editMember,
+        startDate: formatDateForInput(editMember.startDate),
+        expiryDate: formatDateForInput(editMember.expiryDate),
+      });
+    } else {
+      setForm(defaultForm);
+    }
+  }, [editMember]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAdd({ ...form, id: editMember?.id || `m${Date.now()}`, status: "active" });
+
+    if (editMember) {
+      let headersList = {
+        "Accept": "*/*",
+        "Content-Type": "application/json"
+      }
+
+      let bodyContent = JSON.stringify({
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        age: form.age,
+        gender: form.gender,
+        address: form.address,
+        plan: form.plan,
+        startDate: form.startDate,
+        expiryDate: form.expiryDate,
+        notes: form.notes,
+      });
+
+      let response = await fetch(`/api/members/edit/${editMember._id}`, {
+        method: "PUT",
+        body: bodyContent,
+        headers: headersList
+      });
+
+    }
+    else {
+      let headersList = {
+        "Accept": "*/*",
+        "Content-Type": "application/json"
+      }
+
+      let bodyContent = JSON.stringify({
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        age: form.age,
+        gender: form.gender,
+        address: form.address,
+        plan: form.plan,
+        startDate: form.startDate,
+        expiryDate: form.expiryDate,
+        notes: form.notes
+      });
+
+      let response = await fetch("/api/members/add", {
+        method: "POST",
+        body: bodyContent,
+        headers: headersList
+      });
+    }
+
+    handlePageChange();
+
     setForm(defaultForm);
     onClose();
   };
@@ -78,7 +147,7 @@ export function AddMemberModal({ isOpen, onClose, onAdd, editMember }) {
             />
           </FormField>
 
-          <FormField label="Email Address">
+          <FormField label="Email Address" required>
             <input
               name="email"
               type="email"
@@ -86,6 +155,7 @@ export function AddMemberModal({ isOpen, onClose, onAdd, editMember }) {
               onChange={handleChange}
               placeholder="john@example.com"
               className={inputCls}
+              required
             />
           </FormField>
 
@@ -109,17 +179,6 @@ export function AddMemberModal({ isOpen, onClose, onAdd, editMember }) {
               <option value="Female">Female</option>
               <option value="Other">Other</option>
               <option value="Prefer not to say">Prefer not to say</option>
-            </select>
-          </FormField>
-
-          <FormField label="Membership Plan" required>
-            <select name="plan" value={form.plan} onChange={handleChange} required className={inputCls}>
-              <option value="">Select plan</option>
-              {plans.map((p) => (
-                <option key={p.id} value={p.name}>
-                  {p.name} — ${p.price}/{p.duration}
-                </option>
-              ))}
             </select>
           </FormField>
 

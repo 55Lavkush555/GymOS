@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const memberSchema = new Schema({
-    ownerId: {
+    ownerClerkId: {
         type: String,
         required: true,
         index: true
@@ -22,16 +22,17 @@ const memberSchema = new Schema({
         required: true,
         trim: true,
     },
-    joinedAt: {
+    startDate: {
         type: Date,
         default: Date.now,
     },
-    planEndDate: {
+    expiryDate: {
         type: Date,
         required: true,
     },
     age: {
         type: Number,
+        default: 0
     },
     gender: {
         type: String,

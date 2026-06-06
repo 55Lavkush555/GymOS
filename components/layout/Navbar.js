@@ -2,15 +2,16 @@
 
 import { Menu, Sun, Moon, LogOut } from "lucide-react";
 import { useTheme } from "@/providers/ThemeProvider";
-import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 
 export function Navbar({ onMobileMenuOpen, pageTitle }) {
   const { theme, toggleTheme } = useTheme();
-  const { user } = useAuth();
   const router = useRouter();
   const { signOut } = useClerk();
+  const { user, isLoaded } = useUser();
 
   const handleLogout = () => {
     signOut();
@@ -44,12 +45,10 @@ export function Navbar({ onMobileMenuOpen, pageTitle }) {
 
         {/* User info — hidden on smallest screens */}
         <div className="hidden sm:flex items-center gap-2 ml-1">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
-            {initials}
-          </div>
+          <UserButton appearance={{ elements: { avatarBox: "w-8 h-8" } }} />
           <div className="hidden md:block">
-            <p className="text-xs font-medium text-[var(--foreground)] leading-none">{user?.name || "Admin"}</p>
-            <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5 leading-none">{user?.role || "Admin"}</p>
+            <p className="text-xs font-medium text-[var(--foreground)] leading-none">{user?.firstName || "Admin"}</p>
+            <p className="text-[10px] text-[var(--muted-foreground)] mt-0.5 leading-none">Admin</p>
           </div>
         </div>
 

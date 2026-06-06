@@ -60,43 +60,74 @@ function EmptyState({ hasFilters, onReset, onAdd }) {
 }
 
 export function MembersTable() {
-  const [members, setMembers] = useState(initialMembers);
+  const [members, setMembers] = useState([]);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editMember, setEditMember] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalMembers, setTotalMembers] = useState(0)
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 700);
-    return () => clearTimeout(t);
+    const fetchMembers = async () => {
+      try {
+        const response = await fetch("/api/members/get");
+        const data = await response.json();
+
+        if (!data.success) {
+          console.error("Error fetching members:", data.message);
+          setLoading(false);
+          return;
+        }
+
+        setMembers(data.members);
+        setTotalPages(data.totalPages);
+        setTotalMembers(data.totalMembers);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching members:", error);
+        setLoading(false);
+      }
+    };
+    fetchMembers();
+
   }, []);
 
-  const filtered = members.filter((m) => {
-    const matchSearch =
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.phone.includes(search);
-    const matchStatus = statusFilter === "all" || m.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  const handlePageChange = async (newPage, filter = statusFilter, searchValue = search) => {
+    setLoading(true);
+    const response = await fetch(`/api/members/get?page=${newPage}&filter=${filter}&search=${searchValue}`);
+    const data = await response.json();
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+    if (!data.success) {
+      console.error("Error fetching members:", data.message);
+      setLoading(false);
+      return;
+    }
+
+    setMembers(data.members);
+    setTotalPages(data.totalPages);
+    setTotalMembers(data.totalMembers);
+    setPage(newPage);
+    setLoading(false);
+  };
 
   const hasFilters = search !== "" || statusFilter !== "all";
 
-  const handleAdd = (member) => {
-    if (editMember) {
-      setMembers((prev) => prev.map((m) => (m.id === member.id ? member : m)));
-    } else {
-      setMembers((prev) => [member, ...prev]);
-    }
-    setEditMember(null);
-  };
+  const handleDelete = async (id) => {
+    try {
+      setLoading(true);
 
-  const handleDelete = (id) => {
-    setMembers((prev) => prev.filter((m) => m.id !== id));
+      let res = await fetch(`/api/members/delete/${id}`, { method: "DELETE" });
+
+      await handlePageChange(page, statusFilter);
+
+      setLoading(false);
+    }
+    catch (error) {
+      console.error("Error deleting member:", error);
+    }
   };
 
   const handleEdit = (member) => {
@@ -104,8 +135,21 @@ export function MembersTable() {
     setModalOpen(true);
   };
 
-  const handleSearch = (val) => { setSearch(val); setPage(1); };
-  const handleFilter = (val) => { setStatusFilter(val); setPage(1); };
+  const handleFilter = (val) => {
+    if (val === statusFilter) { return; }
+    setLoading(true);
+    setStatusFilter(val);
+    setPage(1);
+    handlePageChange(1, val);
+  };
+
+  const handleSearch = () => {
+    setLoading(true);
+    setPage(1);
+    handlePageChange(1);
+    setLoading(false);
+  };
+
   const handleReset = () => { setSearch(""); setStatusFilter("all"); setPage(1); };
 
   return (
@@ -115,9 +159,10 @@ export function MembersTable() {
         <div className="flex flex-1 gap-2 min-w-0">
           <SearchInput
             value={search}
-            onChange={handleSearch}
+            onChange={setSearch}
             placeholder="Search name or phone..."
             className="flex-1 sm:max-w-60"
+            handleSearch={handleSearch}
           />
           <select
             value={statusFilter}
@@ -152,7 +197,6 @@ export function MembersTable() {
                 <tr className="border-b border-[var(--border)] bg-[var(--secondary)]">
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide whitespace-nowrap">Member</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide whitespace-nowrap">Phone</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide whitespace-nowrap">Plan</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide whitespace-nowrap">Start Date</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide whitespace-nowrap">Expiry Date</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wide whitespace-nowrap">Status</th>
@@ -160,18 +204,18 @@ export function MembersTable() {
                 </tr>
               </thead>
               <tbody>
-                {paginated.length === 0 ? (
+                {members.length === 0 ? (
                   <EmptyState
                     hasFilters={hasFilters}
                     onReset={handleReset}
                     onAdd={() => { setEditMember(null); setModalOpen(true); }}
                   />
                 ) : (
-                  paginated.map((member, idx) => {
+                  members.map((member, idx) => {
                     const colorIdx = members.indexOf(member) % avatarColors.length;
                     return (
                       <tr
-                        key={member.id}
+                        key={member._id}
                         className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--accent)] transition-colors duration-100"
                       >
                         <td className="px-4 py-3">
@@ -188,11 +232,6 @@ export function MembersTable() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-sm text-[var(--secondary-foreground)] whitespace-nowrap">{member.phone}</td>
-                        <td className="px-4 py-3">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 text-xs font-medium whitespace-nowrap">
-                            {member.plan}
-                          </span>
-                        </td>
                         <td className="px-4 py-3 text-sm text-[var(--secondary-foreground)] whitespace-nowrap">{formatDate(member.startDate)}</td>
                         <td className="px-4 py-3 text-sm text-[var(--secondary-foreground)] whitespace-nowrap">{formatDate(member.expiryDate)}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -208,7 +247,7 @@ export function MembersTable() {
                               <Edit2 size={14} />
                             </button>
                             <button
-                              onClick={() => handleDelete(member.id)}
+                              onClick={() => handleDelete(member._id)}
                               className="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                               title="Delete member"
                             >
@@ -225,19 +264,24 @@ export function MembersTable() {
           </div>
 
           {/* Pagination */}
-          {filtered.length > 0 && (
+          {totalMembers > 0 && (
             <div className="flex flex-col xs:flex-row items-center justify-between gap-2 px-4 py-3 border-t border-[var(--border)] bg-[var(--secondary)]">
               <p className="text-xs text-[var(--muted-foreground)] order-2 xs:order-1">
-                {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} members
+                Showing{" "}
+                <span className="font-medium">
+                  {(page - 1) * 10 + 1} - {Math.min(page * 10, totalMembers)}
+                </span>{" "}
+                of <span className="font-medium">{totalMembers}</span>
               </p>
               <div className="flex items-center gap-1 order-1 xs:order-2">
                 <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  onClick={() => handlePageChange(page - 1)}
                   disabled={page === 1}
                   className="flex items-center justify-center w-7 h-7 rounded-md text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronLeft size={14} />
                 </button>
+
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
                   .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
                   .reduce((acc, p, i, arr) => {
@@ -251,19 +295,19 @@ export function MembersTable() {
                     ) : (
                       <button
                         key={p}
-                        onClick={() => setPage(p)}
-                        className={`flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors ${
-                          p === page
-                            ? "bg-[var(--primary)] text-white"
-                            : "text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)]"
-                        }`}
+                        onClick={() => handlePageChange(p)}
+                        className={`flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors ${p === page
+                          ? "bg-[var(--primary)] text-white"
+                          : "text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)]"
+                          }`}
                       >
                         {p}
                       </button>
                     )
                   )}
+
                 <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  onClick={() => handlePageChange(page + 1)}
                   disabled={page === totalPages}
                   className="flex items-center justify-center w-7 h-7 rounded-md text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
@@ -278,8 +322,8 @@ export function MembersTable() {
       <AddMemberModal
         isOpen={modalOpen}
         onClose={() => { setModalOpen(false); setEditMember(null); }}
-        onAdd={handleAdd}
         editMember={editMember}
+        handlePageChange={() => handlePageChange(page, statusFilter)}
       />
     </div>
   );

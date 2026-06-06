@@ -1,7 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { members } from "@/lib/mockData";
+import { useEffect, useState } from "react";
 
 const COLORS = {
   active: "#10b981",
@@ -41,16 +41,36 @@ const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent
 };
 
 export function MembershipPieChart() {
-  const counts = members.reduce((acc, m) => {
-    acc[m.status] = (acc[m.status] || 0) + 1;
-    return acc;
-  }, {});
+  const [active, setActive] = useState(0)
+  const [expired, setExpired] = useState(0)
+  const [expiringSoon, setExpiringSoon] = useState(0)
 
-  const data = Object.entries(counts).map(([key, value]) => ({
-    name: key,
-    value,
-    label: LABELS[key] || key,
-  }));
+  useEffect(() => {
+    const loadData = async () => {
+      let data = await fetch("/api/dashboard/stats").then((res) => res.json());
+
+      setActive(data.activeMembers);
+      setExpired(data.expiredMembers);
+      setExpiringSoon(data.expiringSoonMembers);
+    }
+
+    loadData();
+  }, [])
+
+  const data = [
+    {
+      name: "active",
+      value: active,
+    },
+    {
+      name: "expiring_soon",
+      value: expiringSoon,
+    },
+    {
+      name: "expired",
+      value: expired,
+    },
+  ];
 
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
