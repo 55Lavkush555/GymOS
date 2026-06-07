@@ -11,8 +11,8 @@ import {
   Area,
   AreaChart,
 } from "recharts";
-import { revenueData } from "@/lib/mockData";
 import { formatCurrency } from "@/lib/utils";
+import { useDashboard } from "@/context/DashboardContext";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -29,6 +29,10 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function RevenueChart() {
+  const { data, loading } = useDashboard();
+
+  const revenueData = data.graphData;
+
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
       <div className="mb-4">
@@ -54,7 +58,7 @@ export function RevenueChart() {
             tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+            tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
             width={40}
           />
           <Tooltip content={<CustomTooltip />} />

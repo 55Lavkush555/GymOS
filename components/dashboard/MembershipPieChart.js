@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useEffect, useState } from "react";
+import { useDashboard } from "@/context/DashboardContext";
 
 const COLORS = {
   active: "#10b981",
@@ -41,21 +42,11 @@ const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent
 };
 
 export function MembershipPieChart() {
-  const [active, setActive] = useState(0)
-  const [expired, setExpired] = useState(0)
-  const [expiringSoon, setExpiringSoon] = useState(0)
+  const memberData = useDashboard().data;
 
-  useEffect(() => {
-    const loadData = async () => {
-      let data = await fetch("/api/dashboard/stats").then((res) => res.json());
-
-      setActive(data.activeMembers);
-      setExpired(data.expiredMembers);
-      setExpiringSoon(data.expiringSoonMembers);
-    }
-
-    loadData();
-  }, [])
+  const active = memberData.activeMembers;
+  const expired = memberData.expiredMembers;
+  const expiringSoon = memberData.expiringSoonMembers;
 
   const data = [
     {

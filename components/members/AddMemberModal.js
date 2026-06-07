@@ -14,6 +14,7 @@ const defaultForm = {
   plan: "",
   startDate: new Date().toISOString().split("T")[0],
   expiryDate: "",
+  amountPaid: "",
   notes: "",
 };
 
@@ -75,6 +76,7 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange }
         startDate: form.startDate,
         expiryDate: form.expiryDate,
         notes: form.notes,
+        amountPaid: form.amountPaid
       });
 
       let response = await fetch(`/api/members/edit/${editMember._id}`, {
@@ -100,7 +102,8 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange }
         plan: form.plan,
         startDate: form.startDate,
         expiryDate: form.expiryDate,
-        notes: form.notes
+        notes: form.notes,
+        amountPaid: form.amountPaid
       });
 
       let response = await fetch("/api/members/add", {
@@ -180,6 +183,18 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange }
               <option value="Other">Other</option>
               <option value="Prefer not to say">Prefer not to say</option>
             </select>
+          </FormField>
+
+          <FormField label="Amount Paid (₹INR)">
+            <input
+              name="amountPaid"
+              type="number"
+              value={form.amountPaid}
+              onChange={handleChange}
+              placeholder="1000"
+              min="1"
+              className={inputCls}
+            />
           </FormField>
 
           <FormField label="Start Date" required>

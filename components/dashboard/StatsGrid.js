@@ -1,29 +1,16 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import { StatCard } from "@/components/ui/StatCard";
 import { StatsGridSkeleton } from "@/components/ui/LoadingSkeleton";
 import { Users, UserCheck, UserX, Clock } from "lucide-react";
+import { useDashboard } from "@/context/DashboardContext";
 
 export function StatsGrid() {
-  const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState("")
-  const [active, setActive] = useState("")
-  const [expired, setExpired] = useState("")
-  const [expiringSoon, setExpiringSoon] = useState("")
-
-  useEffect(() => {
-    const loadStats = async () => {
-      let data = await fetch("/api/dashboard/stats").then((res) => res.json());
-
-      setTotal(data.totalMembers);
-      setActive(data.activeMembers);
-      setExpired(data.expiredMembers);
-      setExpiringSoon(data.expiringSoonMembers);
-      setLoading(false);
-    }
-    loadStats();
-  }, []);
+  const {data, loading} = useDashboard();
+  
+  const total = data.totalMembers;
+  const active = data.activeMembers;
+  const expired = data.expiredMembers;
+  const expiringSoon = data.expiringSoonMembers;
 
   const today = new Date("2026-06-02");
   const in3Days = new Date(today);

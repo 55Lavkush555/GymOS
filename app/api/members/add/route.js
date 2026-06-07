@@ -12,7 +12,6 @@ export async function POST(req) {
         if (!user) {
             return NextResponse.json({success: false, message: "Unauthorized"})
         }
-        console.log(typeof body);
 
         const {
             name,
@@ -23,7 +22,8 @@ export async function POST(req) {
             age,
             gender,
             address,
-            notes
+            notes,
+            amountPaid
         } = body
 
         if (!name || !email || !phone || !startDate || !expiryDate) {
@@ -40,7 +40,8 @@ export async function POST(req) {
             age, 
             gender,
             address,
-            notes
+            notes,
+            amountPaid
         })
 
         return NextResponse.json({success: true, message: "Member added successfully"})

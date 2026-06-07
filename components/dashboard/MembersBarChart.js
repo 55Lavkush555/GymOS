@@ -1,5 +1,7 @@
 "use client";
 
+import { useDashboard } from "@/context/DashboardContext";
+import { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -9,7 +11,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { revenueData } from "@/lib/mockData";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -26,6 +27,10 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function MembersBarChart() {
+  const { data } = useDashboard();
+
+  const revenueData = data.graphData;
+
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
       <div className="mb-4">

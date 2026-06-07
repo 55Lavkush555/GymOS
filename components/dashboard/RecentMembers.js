@@ -1,8 +1,9 @@
-import { members } from "@/lib/mockData";
+"use client"
 import { Badge } from "@/components/ui/Badge";
 import { formatDate, getInitials } from "@/lib/utils";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useDashboard } from "@/context/DashboardContext";
 
 const avatarColors = [
   "bg-indigo-500", "bg-purple-500", "bg-emerald-500", "bg-blue-500",
@@ -10,9 +11,9 @@ const avatarColors = [
 ];
 
 export function RecentMembers() {
-  const recent = [...members]
-    .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
-    .slice(0, 5);
+  const { data } = useDashboard();
+
+  const recent = data.fiveActiveMembers;
 
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
@@ -30,7 +31,7 @@ export function RecentMembers() {
       </div>
       <div className="space-y-3">
         {recent.map((member, i) => (
-          <div key={member.id} className="flex items-center gap-3">
+          <div key={i} className="flex items-center gap-3">
             <div
               className={`w-9 h-9 rounded-full ${avatarColors[i % avatarColors.length]} flex items-center justify-center text-white text-xs font-bold shrink-0`}
             >
@@ -38,9 +39,9 @@ export function RecentMembers() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-[var(--foreground)] truncate">{member.name}</p>
-              <p className="text-xs text-[var(--muted-foreground)]">{member.plan} &middot; Joined {formatDate(member.startDate)}</p>
+              <p className="text-xs text-[var(--muted-foreground)]">Started {formatDate(member.startDate)}</p>
             </div>
-            <Badge status={member.status} />
+            <Badge status={"active"} />
           </div>
         ))}
       </div>

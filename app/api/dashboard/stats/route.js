@@ -3,7 +3,7 @@ import Member from "@/models/Member";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 
-export async function GET(req, { params }) {
+export async function GET() {
     try {
         await connectDB();
         const user = await currentUser();

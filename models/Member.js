@@ -42,6 +42,10 @@ const memberSchema = new Schema({
     },
     notes: {
         type: String,
+    },
+    amountPaid: {
+        type: Number,
+        default: 0
     }
 });
 

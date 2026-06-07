@@ -16,7 +16,8 @@ export async function GET() {
             clerkId: user.id,
             name: user.fullName,
             email: user.emailAddresses[0].emailAddress,
-            planEndDate: new Date(new Date().setDate(new Date().getDate() + 7))
+            planEndDate: new Date(new Date().setDate(new Date().getDate() + 7)),
+            revenueHistory: {}
         }
 
         if (await User.findOne({ clerkId: user.id })) {
