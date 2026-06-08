@@ -8,7 +8,6 @@ import { AddMemberModal } from "./AddMemberModal";
 import { TableSkeleton } from "@/components/ui/LoadingSkeleton";
 import { formatDate, getInitials } from "@/lib/utils";
 import { Edit2, Trash2, Users, ChevronLeft, ChevronRight, UserPlus, Search } from "lucide-react";
-import { members as initialMembers } from "@/lib/mockData";
 
 const avatarColors = [
   "bg-indigo-500", "bg-purple-500", "bg-emerald-500", "bg-blue-500",

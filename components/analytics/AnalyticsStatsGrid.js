@@ -1,32 +1,17 @@
 "use client"
 import { StatCard } from "@/components/ui/StatCard";
-import { members, revenueData } from "@/lib/mockData";
-import { Users, UserCheck, UserX, Clock, TrendingUp } from "lucide-react";
+import { UserCheck, UserX, Clock, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { useEffect, useState } from "react";
 import { StatsGridSkeleton } from "../ui/LoadingSkeleton";
+import { useDashboard } from "@/context/DashboardContext";
 
 export function AnalyticsStatsGrid() {
-  const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState("")
-  const [active, setActive] = useState("")
-  const [expired, setExpired] = useState("")
-  const [expiringSoon, setExpiringSoon] = useState("")
+  const {data, loading } = useDashboard();
 
-  useEffect(() => {
-    const loadStats = async () => {
-      let data = await fetch("/api/dashboard/stats").then((res) => res.json());
-
-      setTotal(data.totalMembers);
-      setActive(data.activeMembers);
-      setExpired(data.expiredMembers);
-      setExpiringSoon(data.expiringSoonMembers);
-      setLoading(false);
-    }
-    loadStats();
-  }, []);
-
-  const monthlyRevenue = revenueData[revenueData.length - 1].revenue;
+  const active  = data.activeMembers;
+  const expired  = data.expiredMembers;
+  const expiringSoon  = data.expiringSoonMembers;
+  const monthlyRevenue = data.revenue;
 
   if (loading) return <StatsGridSkeleton />;
 

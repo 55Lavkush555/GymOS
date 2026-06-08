@@ -1,7 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
-import { members } from "@/lib/mockData";
+import { useDashboard } from "@/context/DashboardContext";
 
 const STATUS_COLORS = { active: "#10b981", expiring_soon: "#f59e0b", expired: "#ef4444" };
 const STATUS_LABELS = { active: "Active", expiring_soon: "Expiring Soon", expired: "Expired" };
@@ -34,11 +34,26 @@ const renderLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) =>
 };
 
 export function ActiveVsExpiredChart() {
-  const counts = members.reduce((acc, m) => {
-    acc[m.status] = (acc[m.status] || 0) + 1;
-    return acc;
-  }, {});
-  const data = Object.entries(counts).map(([k, v]) => ({ name: k, value: v }));
+  const memberData = useDashboard().data;
+
+  const active = memberData.activeMembers;
+  const expired = memberData.expiredMembers;
+  const expiringSoon = memberData.expiringSoonMembers;
+
+  const data = [
+    {
+      name: "active",
+      value: active,
+    },
+    {
+      name: "expiring_soon",
+      value: expiringSoon,
+    },
+    {
+      name: "expired",
+      value: expired,
+    },
+  ];
 
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
@@ -62,12 +77,9 @@ export function ActiveVsExpiredChart() {
 }
 
 export function ExpiringBarChart() {
-  const planCounts = members
-    .filter((m) => m.status === "expiring_soon")
-    .reduce((acc, m) => {
-      acc[m.plan] = (acc[m.plan] || 0) + 1;
-      return acc;
-    }, {});
+  const memberData = useDashboard().data;
+
+  const planCounts = {"Expiring Soon": memberData.expiringSoonMembers};
 
   const data = Object.entries(planCounts).map(([plan, count]) => ({ plan, count }));
 

@@ -36,8 +36,9 @@ const formatDateForInput = (date) => {
 const inputCls =
   "w-full h-9 px-3 rounded-lg bg-[var(--secondary)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-transparent transition-colors";
 
-export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange }) {
+export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange=() => {} }) {
   const [form, setForm] = useState(defaultForm);
+  const [isSubmiting, setIsSubmiting] = useState(false)
 
   useEffect(() => {
     if (editMember) {
@@ -58,6 +59,8 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setIsSubmiting(true);
 
     if (editMember) {
       let headersList = {
@@ -113,9 +116,10 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange }
       });
     }
 
+    setIsSubmiting(false);
     handlePageChange();
-
     setForm(defaultForm);
+
     onClose();
   };
 
@@ -252,6 +256,7 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange }
           <Button
             type="submit"
             className="bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)]"
+            disabled={isSubmiting}
           >
             {editMember ? "Save Changes" : "Add Member"}
           </Button>

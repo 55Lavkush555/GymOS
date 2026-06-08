@@ -9,8 +9,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { revenueData } from "@/lib/mockData";
 import { formatCurrency } from "@/lib/utils";
+import { useDashboard } from "@/context/DashboardContext";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -25,6 +25,10 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function RevenueGrowthChart() {
+  const { data } = useDashboard();
+
+  const revenueData = data.graphData;
+
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
       <div className="mb-4">
@@ -41,7 +45,7 @@ export function RevenueGrowthChart() {
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
           <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} width={42} />
+          <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} width={42} />
           <Tooltip content={<CustomTooltip />} />
           <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2.5} fill="url(#revGrad)" dot={false} activeDot={{ r: 5, fill: "#6366f1", stroke: "var(--card)", strokeWidth: 2 }} />
         </AreaChart>

@@ -11,7 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { revenueData } from "@/lib/mockData";
+import { useDashboard } from "@/context/DashboardContext";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -19,7 +19,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 shadow-lg space-y-1">
         <p className="text-xs font-medium text-[var(--muted-foreground)]">{label}</p>
         {payload.map((p) => (
-          <p key={p.dataKey} className="text-sm font-bold" style={{ color: p.color }}>
+          <p key={p.name} className="text-sm font-bold" style={{ color: p.color }}>
             {p.name}: {p.value}
           </p>
         ))}
@@ -30,6 +30,10 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function MembershipGrowthChart() {
+  const { data } = useDashboard();
+
+  const revenueData = data.graphData;
+
   return (
     <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
       <div className="mb-4">

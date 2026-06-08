@@ -1,7 +1,6 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { useEffect, useState } from "react";
 import { useDashboard } from "@/context/DashboardContext";
 
 const COLORS = {

@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export function RevenueChart() {
-  const { data, loading } = useDashboard();
+  const { data } = useDashboard();
 
   const revenueData = data.graphData;
 

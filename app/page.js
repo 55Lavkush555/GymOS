@@ -138,17 +138,17 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <SignInButton mode="modal"
+              <SignUpButton mode="modal"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-[var(--primary)] text-white font-semibold hover:bg-[var(--primary-dark)] transition-all shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/30 hover:-translate-y-0.5"
               >
                 Get Started Free
                 {/* <ArrowRight size={16} /> */}
-              </SignInButton>
-              <SignUpButton mode="modal"
+              </SignUpButton>
+              <SignInButton mode="modal"
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 rounded-xl border border-[var(--border)] text-[var(--foreground)] font-semibold hover:bg-[var(--accent)] transition-all"
               >
                 Login to Dashboard
-              </SignUpButton>
+              </SignInButton>
             </div>
           </div>
         </section>
@@ -218,13 +218,15 @@ export default function LandingPage() {
                 <p className="text-indigo-200 mb-8 max-w-md mx-auto">
                   Join gym owners who use GymOS to streamline operations and grow their business.
                 </p>
-                <Link
-                  href="/login"
+                <SignInButton
+                  mode="modal"
                   className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-white text-indigo-700 font-semibold hover:bg-indigo-50 transition-colors shadow-lg"
                 >
-                  Start Managing Your Gym
-                  <ArrowRight size={16} />
-                </Link>
+                  <div>
+                    Start Managing Your Gym
+                    <ArrowRight size={16} />
+                  </div>
+                </SignInButton>
               </div>
             </div>
           </div>
