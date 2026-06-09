@@ -2,6 +2,7 @@ import connectDB from "@/lib/db";
 import Member from "@/models/Member";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import Attendance from "@/models/Attendence";
 
 export async function DELETE(req, { params }) {
     try {
@@ -14,6 +15,8 @@ export async function DELETE(req, { params }) {
         }
 
         await Member.deleteOne({ ownerClerkId: user.id, _id: id });
+
+        await Attendance.deleteOne({ ownerClerkId: user.id, memberId: id });
 
 
         return NextResponse.json({ success: true, message: "Member deleted successfully" }, { status: 200 });

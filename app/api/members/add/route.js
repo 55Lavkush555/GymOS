@@ -2,6 +2,7 @@ import connectDB from "@/lib/db";
 import Member from "@/models/Member";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import Attendance from "@/models/Attendence";
 
 export async function POST(req) {
     try {
@@ -30,7 +31,7 @@ export async function POST(req) {
             return NextResponse.json({success: false, message: "Missing required fields"})
         }
 
-        const newMember = Member.create({
+        const newMember = await Member.create({
             ownerClerkId: user.id,
             name,
             email,
@@ -42,6 +43,11 @@ export async function POST(req) {
             address,
             notes,
             amountPaid
+        })
+
+        await Attendance.create({
+            memberId: newMember._id,
+            ownerClerkId: user.id
         })
 
         return NextResponse.json({success: true, message: "Member added successfully"})
