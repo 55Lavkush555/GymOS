@@ -27,7 +27,6 @@ export default function DashboardProvider({
                 const result = await res.json();
 
                 setData(result);
-                console.log(result);
             } catch (err) {
                 console.error(err);
             } finally {

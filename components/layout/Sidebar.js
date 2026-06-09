@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
-  CreditCard,
   BarChart3,
   Settings,
   Dumbbell,
@@ -24,7 +23,6 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/members", label: "Members", icon: Users },
   { href: "/attendance", label: "Attendance", icon: CalendarCheck },
-  { href: "/plans", label: "Membership Plans", icon: CreditCard },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

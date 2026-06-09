@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { toast } from "sonner";
 
 const defaultForm = {
   name: "",
@@ -88,6 +89,13 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange=(
         headers: headersList
       });
 
+      if (response.ok) {
+        toast.success("Member updated successfully");
+      }
+      else {
+        toast.error("Error updating member");
+      }
+
     }
     else {
       let headersList = {
@@ -114,6 +122,13 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange=(
         body: bodyContent,
         headers: headersList
       });
+
+      if (response.ok) {
+        toast.success("Member added successfully");
+      }
+      else {
+        toast.error("Error adding member");
+      }
     }
 
     setIsSubmiting(false);

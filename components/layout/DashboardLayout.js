@@ -11,7 +11,6 @@ const pageTitles = {
   "/dashboard": "Dashboard",
   "/members": "Members",
   "/attendance": "Attendance",
-  "/plans": "Membership Plans",
   "/analytics": "Analytics",
   "/settings": "Settings",
 };

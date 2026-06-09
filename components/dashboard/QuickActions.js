@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { UserPlus, CreditCard, Users, BarChart3 } from "lucide-react";
 import { AddMemberModal } from "@/components/members/AddMemberModal";
-import { PlanModal } from "@/components/plans/PlanModal";
 
 export function QuickActions() {
   const [memberModalOpen, setMemberModalOpen] = useState(false);
@@ -21,14 +20,6 @@ export function QuickActions() {
           <UserPlus size={15} />
           <span className="hidden xs:inline sm:inline">Add Member</span>
           <span className="xs:hidden sm:hidden">Add</span>
-        </button>
-        <button
-          onClick={() => setPlanModalOpen(true)}
-          className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors shadow-sm"
-        >
-          <CreditCard size={15} />
-          <span className="hidden sm:inline">Add Subscription Plan</span>
-          <span className="sm:hidden">Add Plan</span>
         </button>
         <Link
           href="/members"
@@ -50,11 +41,6 @@ export function QuickActions() {
         isOpen={memberModalOpen}
         onClose={() => setMemberModalOpen(false)}
         onAdd={() => {}}
-      />
-      <PlanModal
-        isOpen={planModalOpen}
-        onClose={() => setPlanModalOpen(false)}
-        onSave={() => {}}
       />
     </div>
   );

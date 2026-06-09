@@ -8,6 +8,8 @@ import { AddMemberModal } from "./AddMemberModal";
 import { TableSkeleton } from "@/components/ui/LoadingSkeleton";
 import { formatDate, getInitials } from "@/lib/utils";
 import { Edit2, Trash2, Users, ChevronLeft, ChevronRight, UserPlus, Search } from "lucide-react";
+import { toast } from "sonner";
+import ConfirmDialog from "../ui/ConfirmDialog";
 
 const avatarColors = [
   "bg-indigo-500", "bg-purple-500", "bg-emerald-500", "bg-blue-500",
@@ -76,7 +78,7 @@ export function MembersTable() {
         const data = await response.json();
 
         if (!data.success) {
-          console.error("Error fetching members:", data.message);
+          toast.error(data.message);
           setLoading(false);
           return;
         }
@@ -86,7 +88,7 @@ export function MembersTable() {
         setTotalMembers(data.totalMembers);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching members:", error);
+        toast.error("Error fetching members");
         setLoading(false);
       }
     };
@@ -100,7 +102,7 @@ export function MembersTable() {
     const data = await response.json();
 
     if (!data.success) {
-      console.error("Error fetching members:", data.message);
+      toast.error(data.message);
       setLoading(false);
       return;
     }
@@ -122,10 +124,14 @@ export function MembersTable() {
 
       await handlePageChange(page, statusFilter);
 
+      if (res.ok) {
+        toast.success("Member deleted");
+      }
+
       setLoading(false);
     }
     catch (error) {
-      console.error("Error deleting member:", error);
+      toast.error("Error deleting member");
     }
   };
 
@@ -245,13 +251,17 @@ export function MembersTable() {
                             >
                               <Edit2 size={14} />
                             </button>
-                            <button
-                              onClick={() => handleDelete(member._id)}
-                              className="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            <ConfirmDialog
                               title="Delete member"
+                              onConfirm={() => handleDelete(member._id)}
+                              description="This will remove member and attendance data permanently."
                             >
-                              <Trash2 size={14} />
-                            </button>
+                              <button
+                                className="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--muted-foreground)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </ConfirmDialog>
                           </div>
                         </td>
                       </tr>

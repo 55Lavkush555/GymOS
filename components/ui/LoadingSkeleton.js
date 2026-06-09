@@ -6,7 +6,7 @@ export function Skeleton({ className }) {
 
 export function StatCardSkeleton() {
   return (
-    <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4 sm:p-5 shadow-sm">
+    <div className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-4 max-[407px]:px-0.5 overflow-hidden sm:p-5 shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 space-y-2">
           <Skeleton className="h-3.5 w-28" />

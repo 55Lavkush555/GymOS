@@ -15,199 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-
-const attendanceSeed = [
-  {
-    id: "1",
-    name: "Aarav Sharma",
-    membershipStatus: "Active",
-    attendanceStatus: "present",
-    totalVisits: 28,
-    attendancePercentage: 93,
-    attendanceRecords: [
-      "2026-06-08T09:15:00",
-      "2026-06-07T08:58:00",
-      "2026-06-05T09:10:00",
-      "2026-06-03T09:05:00",
-    ],
-  },
-  {
-    id: "2",
-    name: "Mira Patel",
-    membershipStatus: "Active",
-    attendanceStatus: "not_marked",
-    totalVisits: 24,
-    attendancePercentage: 80,
-    attendanceRecords: [
-      "2026-06-07T10:12:00",
-      "2026-06-06T09:40:00",
-      "2026-06-04T09:55:00",
-      "2026-06-02T08:50:00",
-    ],
-  },
-  {
-    id: "3",
-    name: "Neil Desai",
-    membershipStatus: "Expiring Soon",
-    attendanceStatus: "present",
-    totalVisits: 19,
-    attendancePercentage: 76,
-    attendanceRecords: [
-      "2026-06-08T06:55:00",
-      "2026-06-05T07:45:00",
-      "2026-06-03T07:50:00",
-      "2026-06-01T08:20:00",
-    ],
-  },
-  {
-    id: "4",
-    name: "Sonia Kapoor",
-    membershipStatus: "Active",
-    attendanceStatus: "not_marked",
-    totalVisits: 22,
-    attendancePercentage: 88,
-    attendanceRecords: [
-      "2026-06-07T08:35:00",
-      "2026-06-06T09:05:00",
-      "2026-06-04T08:50:00",
-      "2026-06-02T08:30:00",
-    ],
-  },
-  {
-    id: "5",
-    name: "Rohan Mehta",
-    membershipStatus: "Active",
-    attendanceStatus: "present",
-    totalVisits: 31,
-    attendancePercentage: 97,
-    attendanceRecords: [
-      "2026-06-08T09:20:00",
-      "2026-06-06T09:15:00",
-      "2026-06-05T09:00:00",
-      "2026-06-03T09:25:00",
-    ],
-  },
-  {
-    id: "6",
-    name: "Isha Joshi",
-    membershipStatus: "Expired",
-    attendanceStatus: "not_marked",
-    totalVisits: 15,
-    attendancePercentage: 65,
-    attendanceRecords: [
-      "2026-06-06T07:50:00",
-      "2026-06-04T07:25:00",
-      "2026-06-02T07:35:00",
-    ],
-  },
-  {
-    id: "7",
-    name: "Rahul Singh",
-    membershipStatus: "Active",
-    attendanceStatus: "present",
-    totalVisits: 26,
-    attendancePercentage: 87,
-    attendanceRecords: [
-      "2026-06-08T09:05:00",
-      "2026-06-07T08:55:00",
-      "2026-06-05T09:00:00",
-      "2026-06-03T09:10:00",
-    ],
-  },
-  {
-    id: "8",
-    name: "Priya Nair",
-    membershipStatus: "Expiring Soon",
-    attendanceStatus: "not_marked",
-    totalVisits: 18,
-    attendancePercentage: 72,
-    attendanceRecords: [
-      "2026-06-07T10:00:00",
-      "2026-06-05T09:20:00",
-      "2026-06-02T09:10:00",
-    ],
-  },
-  {
-    id: "9",
-    name: "Karan Patel",
-    membershipStatus: "Active",
-    attendanceStatus: "present",
-    totalVisits: 21,
-    attendancePercentage: 84,
-    attendanceRecords: [
-      "2026-06-08T08:45:00",
-      "2026-06-06T08:55:00",
-      "2026-06-04T09:05:00",
-      "2026-06-01T08:30:00",
-    ],
-  },
-  {
-    id: "10",
-    name: "Tara Rao",
-    membershipStatus: "Expired",
-    attendanceStatus: "not_marked",
-    totalVisits: 13,
-    attendancePercentage: 60,
-    attendanceRecords: [
-      "2026-06-06T09:00:00",
-      "2026-06-04T09:10:00",
-      "2026-06-02T08:25:00",
-    ],
-  },
-  {
-    id: "11",
-    name: "Vikram Shah",
-    membershipStatus: "Active",
-    attendanceStatus: "present",
-    totalVisits: 29,
-    attendancePercentage: 90,
-    attendanceRecords: [
-      "2026-06-08T09:10:00",
-      "2026-06-07T09:05:00",
-      "2026-06-05T09:00:00",
-      "2026-06-03T09:15:00",
-    ],
-  },
-  {
-    id: "12",
-    name: "Anjali Deshmukh",
-    membershipStatus: "Active",
-    attendanceStatus: "not_marked",
-    totalVisits: 20,
-    attendancePercentage: 82,
-    attendanceRecords: [
-      "2026-06-07T08:25:00",
-      "2026-06-06T08:50:00",
-      "2026-06-04T09:05:00",
-    ],
-  },
-  {
-    id: "13",
-    name: "Samir Khan",
-    membershipStatus: "Expiring Soon",
-    attendanceStatus: "present",
-    totalVisits: 23,
-    attendancePercentage: 85,
-    attendanceRecords: [
-      "2026-06-08T08:55:00",
-      "2026-06-07T09:00:00",
-      "2026-06-05T09:15:00",
-    ],
-  },
-  {
-    id: "14",
-    name: "Neha Verma",
-    membershipStatus: "Active",
-    attendanceStatus: "not_marked",
-    totalVisits: 17,
-    attendancePercentage: 78,
-    attendanceRecords: [
-      "2026-06-07T09:35:00",
-      "2026-06-05T09:12:00",
-      "2026-06-01T09:00:00",
-    ],
-  },
-];
+import { toast } from "sonner";
 
 const FILTER_OPTIONS = [
   { key: "all", label: "All Members" },
@@ -268,12 +76,14 @@ export default function AttendancePage() {
     try {
       let res = await fetch(`/api/attendance/mark-present/${memberId}`)
       if (!res.ok) {
-        console.error("Failed to mark present:", res.statusText);
+        toast.error("Failed to mark present");
         return;
       }
+
+      toast.success("Marked present");
     }
     catch (err) {
-      console.error(err);
+      toast.error("Failed to mark present");
       return;
     }
 
