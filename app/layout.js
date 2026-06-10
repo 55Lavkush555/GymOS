@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "GymOS - Gym Management System",
-  description: "Professional gym management platform for fitness studios",
+  description: "GymOS is a gym management platform that helps fitness studios manage members, attendance, memberships, expiry tracking, and business analytics in one place.",
 };
 
 export default function RootLayout({ children }) {
