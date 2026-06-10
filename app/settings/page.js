@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Sun, Moon, CreditCard } from "lucide-react";
@@ -19,6 +19,33 @@ function SectionCard({ title, icon: Icon, children }) {
   );
 }
 
+function PlanLoadingSkeleton() {
+  return (
+    <div className="rounded-xl border border-border bg-secondary p-4 sm:p-5 animate-pulse">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
+          <div className="h-4 w-36 rounded bg-muted"></div>
+          <div className="mt-2 h-3 w-52 rounded bg-muted"></div>
+        </div>
+
+        <div className="h-7 w-20 rounded-full bg-muted"></div>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div>
+          <div className="h-3 w-32 rounded bg-muted"></div>
+          <div className="mt-2 h-4 w-40 rounded bg-muted"></div>
+        </div>
+
+        <div>
+          <div className="h-3 w-28 rounded bg-muted"></div>
+          <div className="mt-2 h-4 w-36 rounded bg-muted"></div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function InfoRow({ label, value }) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl bg-secondary border border-border px-4 py-3">
@@ -29,9 +56,27 @@ function InfoRow({ label, value }) {
 }
 
 export default function SettingsPage() {
+  const [loading, setLoading] = useState(true);
   const { theme, toggleTheme } = useTheme();
   const planStatus = "Active";
-  const expiryDate = "31 August 2026";
+  const [expiryDate, setExpiryDate] = useState(null)
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await fetch('/api/subscription/status');
+        const data = await response.json();
+        const date = new Date(data.planEndDate);
+        setExpiryDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [])
+  
 
   return (
     <DashboardLayout>
@@ -66,28 +111,31 @@ export default function SettingsPage() {
 
         <SectionCard title="Subscription / Membership" icon={CreditCard}>
           <div className="space-y-4">
-            <div className="rounded-xl border border-border bg-secondary p-4 sm:p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Current Plan Status</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Your GymOS membership is currently active.
-                  </p>
-                </div>
-                <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
-                  {planStatus}
-                </span>
-              </div>
+            {loading ? <PlanLoadingSkeleton />
+              : (
+                <div className="rounded-xl border border-border bg-secondary p-4 sm:p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Current Plan Status</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Your GymOS membership is currently active.
+                      </p>
+                    </div>
+                    <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                      {planStatus}
+                    </span>
+                  </div>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <InfoRow label="Membership expiry date" value={expiryDate} />
-                <InfoRow label="Renewal contact" value="+91 62691 21509" />
-              </div>
-            </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <InfoRow label="Membership expiry date" value={expiryDate} />
+                    <InfoRow label="Renewal contact" value="+91 62691 21509" />
+                  </div>
+                </div>
+              )}
 
             <div className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
               <p className="text-sm text-foreground leading-6">
-                To renew your GymOS membership, contact us at <span className="font-semibold">+91 62691 21509</span>.
+                To renew your GymOS membership, contact us at <a href="https://wa.me/916269121509?text=Hello%20GymOS,%20I%20want%20to%20subscribe%20to%20the%207%20Days%20Free%20Trial." className="font-semibold">+91 62691 21509</a>.
               </p>
             </div>
           </div>

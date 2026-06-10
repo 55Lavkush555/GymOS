@@ -12,6 +12,15 @@ export function ProtectedRoute({ children }) {
     if (isLoaded && !isSignedIn) {
       router.replace("/");
     }
+    const loadData = async () => {
+      let data = await fetch("/api/subscription/status").then((res) => res.json());
+
+      if (data.isExpired) {
+        router.replace("/subscription-expired");
+      }
+    };
+
+    loadData();
   }, [isSignedIn, isLoaded, router]);
 
   if (!isLoaded) {

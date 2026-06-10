@@ -31,6 +31,7 @@ export default function AttendancePage() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isMarking, setIsMarking] = useState(false);
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -74,6 +75,7 @@ export default function AttendancePage() {
 
   const handleMarkPresent = async (_id, memberId) => {
     try {
+      setIsMarking(true);
       let res = await fetch(`/api/attendance/mark-present/${memberId}`)
       if (!res.ok) {
         toast.error("Failed to mark present");
@@ -85,6 +87,9 @@ export default function AttendancePage() {
     catch (err) {
       toast.error("Failed to mark present");
       return;
+    }
+    finally {
+      setIsMarking(false);
     }
 
     setMembers((current) =>
@@ -199,6 +204,7 @@ export default function AttendancePage() {
                               <Button
                                 size="sm"
                                 onClick={() => handleMarkPresent(member._id, member.memberId._id)}
+                                disabled={isMarking}
                               >
                                 Mark Present
                               </Button>

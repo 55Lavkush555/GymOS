@@ -257,8 +257,8 @@ export default function LandingPage() {
                 <div
                   key={plan.name}
                   className={`relative rounded-3xl border p-6 sm:p-7 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${plan.recommended
-                      ? "border-primary bg-linear-to-b from-card to-indigo-50/60 dark:to-indigo-950/20"
-                      : "border-border bg-card"
+                    ? "border-primary bg-linear-to-b from-card to-indigo-50/60 dark:to-indigo-950/20"
+                    : "border-border bg-card"
                     }`}
                 >
                   {plan.recommended && (
@@ -292,8 +292,8 @@ export default function LandingPage() {
                   <a href={"#contact"}>
                     <button
                       className={`w-full rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${plan.recommended
-                          ? "bg-primary text-white hover:bg-primary-dark"
-                          : "border border-border text-foreground hover:bg-accent"
+                        ? "bg-primary text-white hover:bg-primary-dark"
+                        : "border border-border text-foreground hover:bg-accent"
                         }`}
                     >
                       {plan.cta}
@@ -322,32 +322,24 @@ export default function LandingPage() {
                     Contact us to activate your plan and get started with GymOS membership support.
                   </p>
 
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-5 flex items-center gap-3">
                     <div className="rounded-2xl border border-border bg-background px-4 py-3">
                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">WhatsApp</p>
                       <a href={whatsappUrl} target="_blank" rel="noreferrer" className="mt-1 block text-sm font-semibold text-foreground hover:text-primary transition-colors">
                         +91 62691 21509
                       </a>
                     </div>
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-colors"
+                      >
+                        WhatsApp
+                      </a>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0">
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-primary text-white font-semibold hover:bg-primary-dark transition-colors"
-                  >
-                    WhatsApp
-                  </a>
-                  <a
-                    href={callUrl}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-border text-foreground font-semibold hover:bg-accent transition-colors"
-                  >
-                    Call us for subscription
-                  </a>
-                </div>
               </div>
             </div>
           </div>
