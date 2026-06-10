@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { AddMemberModal } from "./AddMemberModal";
 import { TableSkeleton } from "@/components/ui/LoadingSkeleton";
 import { formatDate, getInitials } from "@/lib/utils";
-import { Edit2, Trash2, Users, ChevronLeft, ChevronRight, UserPlus, Search } from "lucide-react";
+import { Edit2, Trash2, Users, ChevronLeft, ChevronRight, UserPlus, Search, Download } from "lucide-react";
 import { toast } from "sonner";
 import ConfirmDialog from "../ui/ConfirmDialog";
 
@@ -70,6 +70,7 @@ export function MembersTable() {
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1)
   const [totalMembers, setTotalMembers] = useState(0)
+  const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -157,6 +158,66 @@ export function MembersTable() {
 
   const handleReset = () => { setSearch(""); setStatusFilter("all"); setPage(1); };
 
+  const escapeCsvValue = (value) => {
+    const stringValue = value == null ? "" : String(value);
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  };
+
+  const handleExport = async () => {
+    try {
+      setExporting(true);
+
+      const params = new URLSearchParams({
+        page: "1",
+        limit: "100000",
+      });
+
+      if (statusFilter && statusFilter !== "all") {
+        params.set("filter", statusFilter);
+      }
+
+      if (search.trim()) {
+        params.set("search", search.trim());
+      }
+
+      const response = await fetch(`/api/members/get?${params.toString()}`);
+      const data = await response.json();
+
+      if (!data.success) {
+        toast.error(data.message || "Unable to export members");
+        return;
+      }
+
+      const csvRows = [
+        ["Name", "Email", "Phone", "Start Date", "Expiry Date", "Status"].map(escapeCsvValue).join(","),
+        ...data.members.map((member) => [
+          member.name,
+          member.email,
+          member.phone,
+          formatDate(member.startDate),
+          formatDate(member.expiryDate),
+          member.status,
+        ].map(escapeCsvValue).join(",")),
+      ];
+
+      const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `gymos-members-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      toast.success("Members exported successfully");
+    } catch (error) {
+      toast.error("Error exporting members");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -180,13 +241,24 @@ export function MembersTable() {
             <option value="expired">Expired</option>
           </select>
         </div>
-        <Button
-          onClick={() => { setEditMember(null); setModalOpen(true); }}
-          className="bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] flex items-center justify-center gap-2 h-9 w-full sm:w-auto shrink-0"
-        >
-          <UserPlus size={15} />
-          Add Member
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto shrink-0">
+          <Button
+            onClick={handleExport}
+            disabled={exporting || loading || totalMembers === 0}
+            variant="outline"
+            className="flex items-center justify-center gap-2 h-9 w-full sm:w-auto"
+          >
+            <Download size={15} />
+            {exporting ? "Exporting..." : "Export"}
+          </Button>
+          <Button
+            onClick={() => { setEditMember(null); setModalOpen(true); }}
+            className="bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)] flex items-center justify-center gap-2 h-9 w-full sm:w-auto"
+          >
+            <UserPlus size={15} />
+            Add Member
+          </Button>
+        </div>
       </div>
 
       {/* Loading skeleton */}

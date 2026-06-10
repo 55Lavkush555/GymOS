@@ -135,7 +135,7 @@ export default function SettingsPage() {
 
             <div className="rounded-xl border border-border bg-card px-4 py-4 sm:px-5">
               <p className="text-sm text-foreground leading-6">
-                To renew your GymOS membership, contact us at <a href="https://wa.me/916269121509?text=Hello%20GymOS,%20I%20want%20to%20subscribe%20to%20the%207%20Days%20Free%20Trial." className="font-semibold">+91 62691 21509</a>.
+                To renew your GymOS membership, contact us at <a href="https://wa.me/916269121509" className="font-semibold">+91 62691 21509</a>.
               </p>
             </div>
           </div>
