@@ -181,12 +181,10 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }) {
 
         <div className="p-3 border-t border-[var(--sidebar-border)]">
           <div className="flex items-center gap-3 px-2 py-2">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-              {initials}
-            </div>
+            <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "w-8 h-8" } }} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-[var(--foreground)] truncate">{user?.name || "Admin"}</p>
-              <p className="text-xs text-[var(--muted-foreground)] truncate">{user?.email || ""}</p>
+              <p className="text-sm font-medium text-[var(--foreground)] truncate">{user?.firstName || "Admin"}</p>
+              <p className="text-xs text-[var(--muted-foreground)] truncate">{user?.primaryEmailAddress?.emailAddress || ""}</p>
             </div>
             <button
               onClick={handleLogout}
