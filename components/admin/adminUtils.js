@@ -21,16 +21,6 @@ export function getSubscriptionStatus(planEndDate) {
   return "active";
 }
 
-export function formatLocalDate(dateString) {
-  if (!dateString) return "-";
-
-  return new Intl.DateTimeFormat("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(dateString));
-}
-
 export function getInitials(name) {
   if (!name) return "NA";
 

@@ -2,6 +2,7 @@ import connectDB from "@/lib/db";
 import Attendance from "@/models/Attendence";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import { getIstDateKey } from "@/lib/date";
 
 export async function GET() {
     try {
@@ -14,17 +15,11 @@ export async function GET() {
 
         const attendanceData = await Attendance.find({ ownerClerkId: user.id }).populate("memberId", "name");
 
-        const today = new Date();
+        const todayKey = getIstDateKey(new Date());
 
         const attendance = attendanceData.map((member) => {
             const isPresent = member.attendanceRecords.some((record) => {
-                const date = new Date(record);
-
-                return (
-                    date.getDate() === today.getDate() &&
-                    date.getMonth() === today.getMonth() &&
-                    date.getFullYear() === today.getFullYear()
-                );
+                return getIstDateKey(record) === todayKey;
             });
 
             return {

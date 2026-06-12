@@ -2,6 +2,7 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
 import Member from "@/models/Member";
+import { getIstMonthBounds, getIstMonthKey } from "@/lib/date";
 
 export async function GET(req) {
 
@@ -22,27 +23,12 @@ export async function GET(req) {
 
         const users = await User.find({});
 
-        const now = new Date();
+        const snapshotDate = new Date();
+        snapshotDate.setDate(1);
+        snapshotDate.setMonth(snapshotDate.getMonth() - 1);
 
-        const snapshotDate = new Date(
-            now.getFullYear(),
-            now.getMonth() - 1,
-            1
-        );
-
-        const MonthKey = `${snapshotDate.getFullYear()}-${String(snapshotDate.getMonth() + 1).padStart(2, "0")}`;
-
-        const startOfMonth = new Date(
-            snapshotDate.getFullYear(),
-            snapshotDate.getMonth(),
-            1
-        );
-
-        const endOfMonth = new Date(
-            snapshotDate.getFullYear(),
-            snapshotDate.getMonth() + 1,
-            1
-        );
+        const MonthKey = getIstMonthKey(snapshotDate);
+        const { start: startOfMonth, end: endOfMonth } = getIstMonthBounds(snapshotDate);
 
         for (const user of users) {
             const result = await Member.aggregate([

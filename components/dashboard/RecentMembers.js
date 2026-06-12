@@ -1,6 +1,7 @@
 "use client"
 import { Badge } from "@/components/ui/Badge";
-import { formatDate, getInitials } from "@/lib/utils";
+import { formatDate } from "@/lib/date";
+import { getInitials } from "@/lib/utils";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useDashboard } from "@/context/DashboardContext";

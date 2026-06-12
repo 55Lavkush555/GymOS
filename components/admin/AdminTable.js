@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { getInitials, formatLocalDate, getSubscriptionStatus } from "@/components/admin/adminUtils";
+import { getInitials, getSubscriptionStatus } from "@/components/admin/adminUtils";
+import { formatDate } from "@/lib/date";
 import { Pencil, Trash2 } from "lucide-react";
 
 const statusMeta = {
@@ -54,7 +55,7 @@ export function AdminTable({ rows, onEdit, onDelete }) {
                       {meta.label}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-sm text-secondary-foreground">{formatLocalDate(row.planEndDate)}</td>
+                  <td className="px-5 py-4 text-sm text-secondary-foreground">{formatDate(row.planEndDate)}</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">
                       <Button type="button" variant="outline" size="sm" onClick={() => onEdit(row)}>

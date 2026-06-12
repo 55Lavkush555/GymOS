@@ -3,22 +3,12 @@ import Member from "@/models/Member";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import User from "@/models/User";
+import { getIstDateKey, getIstMonthBounds, getIstMonthKey } from "@/lib/date";
 
 async function getPastData(user) {
     const now = new Date();
-    const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-
-    const startOfMonth = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        1
-    );
-
-    const endOfMonth = new Date(
-        now.getFullYear(),
-        now.getMonth() + 1,
-        1
-    );
+    const currentMonthKey = getIstMonthKey(now);
+    const { start: startOfMonth, end: endOfMonth } = getIstMonthBounds(now);
 
     const result = await Member.aggregate([
         {
@@ -69,61 +59,54 @@ async function getPastData(user) {
 
 
 async function getStats(user) {
-    const now = new Date();
+    const todayKey = getIstDateKey(new Date());
+    const fourDaysLaterKey = getIstDateKey(new Date(Date.now() + 4 * 24 * 60 * 60 * 1000));
 
-    const fourDaysLater = new Date();
-    fourDaysLater.setDate(fourDaysLater.getDate() + 4);
+    const members = await Member.find({ ownerClerkId: user.id }).lean();
 
-    let query = {
-        ownerClerkId: user.id,
-    };
-
-    const totalMembers = await Member.find({ ...query }).countDocuments();
-    const expiredMembers = await Member.find({ ...query, expiryDate: { $lt: now } }).countDocuments();
-    const expiringSoonMembers = await Member.find({ ...query, expiryDate: { $gte: now, $lte: fourDaysLater } }).countDocuments();
-    const activeMembers = await Member.find({ ...query, expiryDate: { $gt: fourDaysLater } }).countDocuments();
+    const totalMembers = members.length;
+    const expiredMembers = members.filter((member) => {
+        const expiryKey = getIstDateKey(member.expiryDate);
+        return expiryKey && expiryKey < todayKey;
+    }).length;
+    const expiringSoonMembers = members.filter((member) => {
+        const expiryKey = getIstDateKey(member.expiryDate);
+        return expiryKey && expiryKey >= todayKey && expiryKey <= fourDaysLaterKey;
+    }).length;
+    const activeMembers = members.filter((member) => {
+        const expiryKey = getIstDateKey(member.expiryDate);
+        return expiryKey && expiryKey > fourDaysLaterKey;
+    }).length;
 
     return { totalMembers, expiredMembers, expiringSoonMembers, activeMembers };
 }
 
 
 async function getActiveMembers(user) {
-    const fourDaysLater = new Date();
-    fourDaysLater.setDate(fourDaysLater.getDate() + 4);
+    const fourDaysLaterKey = getIstDateKey(new Date(Date.now() + 4 * 24 * 60 * 60 * 1000));
 
-    let query = {
-        ownerClerkId: user.id,
-        expiryDate: {
-            $gt: fourDaysLater,
-        }
-    };
+    const members = await Member.find({ ownerClerkId: user.id }).sort({ _id: -1 }).lean();
 
-    let acitveMembers = await Member.find(query)
-        .sort({ _id: -1 })
-        .limit(5)
-
-    return acitveMembers
+    return members
+        .filter((member) => {
+            const expiryKey = getIstDateKey(member.expiryDate);
+            return expiryKey && expiryKey > fourDaysLaterKey;
+        })
+        .slice(0, 5);
 }
 
 async function getExpiringMembers(user) {
-    const now = new Date();
+    const todayKey = getIstDateKey(new Date());
+    const fourDaysLaterKey = getIstDateKey(new Date(Date.now() + 4 * 24 * 60 * 60 * 1000));
 
-    const fourDaysLater = new Date();
-    fourDaysLater.setDate(fourDaysLater.getDate() + 4);
+    const members = await Member.find({ ownerClerkId: user.id }).sort({ _id: -1 }).lean();
 
-    let query = {
-        ownerClerkId: user.id,
-        expiryDate: {
-            $gte: now,
-            $lte: fourDaysLater,
-        }
-    };
-
-    let expiringMembers = await Member.find(query)
-        .sort({ _id: -1 })
-        .limit(5)
-
-    return expiringMembers;
+    return members
+        .filter((member) => {
+            const expiryKey = getIstDateKey(member.expiryDate);
+            return expiryKey && expiryKey >= todayKey && expiryKey <= fourDaysLaterKey;
+        })
+        .slice(0, 5);
 }
 
 

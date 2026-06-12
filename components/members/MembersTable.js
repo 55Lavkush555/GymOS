@@ -5,9 +5,11 @@ import { Badge } from "@/components/ui/Badge";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { Button } from "@/components/ui/Button";
 import { AddMemberModal } from "./AddMemberModal";
+import { RenewMembershipModal } from "./RenewMembershipModal";
 import { TableSkeleton } from "@/components/ui/LoadingSkeleton";
-import { formatDate, getInitials } from "@/lib/utils";
-import { Edit2, Trash2, Users, ChevronLeft, ChevronRight, UserPlus, Search, Download } from "lucide-react";
+import { formatDate, getTodayDateValue } from "@/lib/date";
+import { getInitials } from "@/lib/utils";
+import { Edit2, RotateCw, Trash2, Users, ChevronLeft, ChevronRight, UserPlus, Search, Download } from "lucide-react";
 import { toast } from "sonner";
 import ConfirmDialog from "../ui/ConfirmDialog";
 
@@ -67,6 +69,8 @@ export function MembersTable() {
   const [page, setPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editMember, setEditMember] = useState(null);
+  const [renewModalOpen, setRenewModalOpen] = useState(false);
+  const [renewMember, setRenewMember] = useState(null);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1)
   const [totalMembers, setTotalMembers] = useState(0)
@@ -141,6 +145,11 @@ export function MembersTable() {
     setModalOpen(true);
   };
 
+  const handleRenew = (member) => {
+    setRenewMember(member);
+    setRenewModalOpen(true);
+  };
+
   const handleFilter = (val) => {
     if (val === statusFilter) { return; }
     setLoading(true);
@@ -204,7 +213,7 @@ export function MembersTable() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `gymos-members-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.download = `gymos-members-${getTodayDateValue()}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -316,6 +325,16 @@ export function MembersTable() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center justify-end gap-0.5">
+                            <Button
+                              onClick={() => handleRenew(member)}
+                              variant="outline"
+                              size="sm"
+                              className="h-8 gap-1.5 px-2.5 mr-1"
+                              title="Renew membership"
+                            >
+                              <RotateCw size={13} />
+                              Renew
+                            </Button>
                             <button
                               onClick={() => handleEdit(member)}
                               className="flex items-center justify-center w-8 h-8 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--primary)] hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
@@ -405,6 +424,16 @@ export function MembersTable() {
         onClose={() => { setModalOpen(false); setEditMember(null); }}
         editMember={editMember}
         handlePageChange={() => handlePageChange(page, statusFilter)}
+      />
+
+      <RenewMembershipModal
+        isOpen={renewModalOpen}
+        onClose={() => {
+          setRenewModalOpen(false);
+          setRenewMember(null);
+        }}
+        member={renewMember}
+        onSaved={() => handlePageChange(page, statusFilter, search)}
       />
     </div>
   );

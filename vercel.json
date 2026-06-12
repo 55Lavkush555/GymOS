@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/send-mail",
+      "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/cron/save-month-data",
+      "schedule": "30 18 1 * *"
+    }
+  ]
+}

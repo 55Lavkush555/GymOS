@@ -7,7 +7,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/date";
 import {
   Users,
   CheckCircle2,
@@ -270,13 +270,9 @@ export default function AttendancePage() {
               <p className="text-sm font-medium text-[var(--foreground)] mb-3">Attendance Records</p>
               <div className="space-y-3">
                 {selectedMember.attendanceRecords.map((record, index) => {
-                  const date = new Date(record);
                   return (
                     <div key={`${selectedMember._id}-${index}`} className="flex items-center justify-between rounded-2xl bg-[var(--secondary)] px-4 py-3">
-                      <span className="text-sm text-[var(--foreground)]">{formatDate(record)}</span>
-                      <span className="text-xs text-[var(--muted-foreground)]">
-                        {date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
-                      </span>
+                      <span className="text-sm text-[var(--foreground)]">{formatDateTime(record)}</span>
                     </div>
                   );
                 })}

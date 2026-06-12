@@ -2,6 +2,7 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import { getIstDateKey } from "@/lib/date";
 
 export async function GET() {
     try {
@@ -16,7 +17,9 @@ export async function GET() {
 
         const planEndDate = userData.planEndDate;
 
-        const isExpired = new Date() > new Date(planEndDate);
+        const todayKey = getIstDateKey(new Date());
+        const planEndKey = getIstDateKey(planEndDate);
+        const isExpired = planEndKey ? todayKey > planEndKey : false;
 
         return NextResponse.json({ success: true, message: "Settings fetched successfully", planEndDate, isExpired }, { status: 200 });
     } catch (error) {

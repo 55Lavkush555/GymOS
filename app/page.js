@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useTheme } from "@/providers/ThemeProvider";
+import { getCurrentYear } from "@/lib/date";
 import {
   Dumbbell, Users, BarChart3, CreditCard, Shield, Zap, Moon, Sun,
   ArrowRight, CheckCircle, TrendingUp, Clock, Sparkles
@@ -388,7 +389,7 @@ export default function LandingPage() {
             <span className="text-sm font-semibold text-foreground">GymOS</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} GymOS. Built for fitness businesses.
+            &copy; {getCurrentYear()} GymOS. Built for fitness businesses.
           </p>
         </div>
       </footer>

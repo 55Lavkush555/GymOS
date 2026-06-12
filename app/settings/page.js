@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useTheme } from "@/providers/ThemeProvider";
 import { Sun, Moon, CreditCard } from "lucide-react";
+import { formatDate } from "@/lib/date";
 
 function SectionCard({ title, icon: Icon, children }) {
   return (
@@ -66,8 +67,7 @@ export default function SettingsPage() {
       try {
         const response = await fetch('/api/subscription/status');
         const data = await response.json();
-        const date = new Date(data.planEndDate);
-        setExpiryDate(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
+        setExpiryDate(formatDate(data.planEndDate));
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {

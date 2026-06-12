@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { formatDateForInput, getTodayDateValue } from "@/lib/date";
 import { toast } from "sonner";
 
-const defaultForm = {
+const createDefaultForm = () => ({
   name: "",
   phone: "",
   email: "",
@@ -13,11 +14,11 @@ const defaultForm = {
   gender: "",
   address: "",
   plan: "",
-  startDate: new Date().toISOString().split("T")[0],
+  startDate: getTodayDateValue(),
   expiryDate: "",
   amountPaid: "",
   notes: "",
-};
+});
 
 function FormField({ label, children, required }) {
   return (
@@ -30,15 +31,11 @@ function FormField({ label, children, required }) {
   );
 }
 
-const formatDateForInput = (date) => {
-  return date ? new Date(date).toISOString().split("T")[0] : "";
-};
-
 const inputCls =
   "w-full h-9 px-3 rounded-lg bg-[var(--secondary)] border border-[var(--border)] text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-transparent transition-colors";
 
 export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange=() => {} }) {
-  const [form, setForm] = useState(defaultForm);
+  const [form, setForm] = useState(createDefaultForm);
   const [isSubmiting, setIsSubmiting] = useState(false)
 
   useEffect(() => {
@@ -49,7 +46,7 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange=(
         expiryDate: formatDateForInput(editMember.expiryDate),
       });
     } else {
-      setForm(defaultForm);
+      setForm(createDefaultForm());
     }
   }, [editMember]);
 
@@ -133,7 +130,7 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange=(
 
     setIsSubmiting(false);
     handlePageChange();
-    setForm(defaultForm);
+    setForm(createDefaultForm());
 
     onClose();
   };
@@ -141,7 +138,7 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange=(
   return (
     <Modal
       isOpen={isOpen}
-      onClose={() => { setForm(defaultForm); onClose(); }}
+      onClose={() => { setForm(createDefaultForm()); onClose(); }}
       title={editMember ? "Edit Member" : "Add New Member"}
       size="lg"
     >
@@ -264,7 +261,7 @@ export function AddMemberModal({ isOpen, onClose, editMember, handlePageChange=(
           <Button
             type="button"
             variant="outline"
-            onClick={() => { setForm(defaultForm); onClose(); }}
+            onClick={() => { setForm(createDefaultForm()); onClose(); }}
           >
             Cancel
           </Button>

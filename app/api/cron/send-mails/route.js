@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { sendEmail } from "@/lib/sendEmail";
 import Member from "@/models/Member";
 import User from "@/models/User";
+import { formatDate, getIstDateKey } from "@/lib/date";
 
 
 export async function GET() {
@@ -12,10 +13,12 @@ export async function GET() {
 
         const users = await User.find({});
 
-        const today = new Date();
+        const todayKey = getIstDateKey(new Date());
+        const todayKeyAsUtc = new Date(`${todayKey}T00:00:00.000Z`);
 
         for (const user of users) {
-            let isExpired = today > new Date(user.planEndDate);
+            const planEndKey = getIstDateKey(user.planEndDate);
+            let isExpired = planEndKey ? todayKey > planEndKey : false;
 
             if (!isExpired) {
                 let members = await Member.find({ ownerClerkId: user.clerkId });
@@ -24,13 +27,16 @@ export async function GET() {
                         continue;
                     }
 
+                    const expiryKey = getIstDateKey(member.expiryDate);
+                    if (!expiryKey) {
+                        continue;
+                    }
+
+                    const expiryKeyAsUtc = new Date(`${expiryKey}T00:00:00.000Z`);
+                    const diffTime = expiryKeyAsUtc - todayKeyAsUtc;
+                    const daysLeft = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
                     const expiryDate = new Date(member.expiryDate);
-
-                    const diffTime = expiryDate - today;
-
-                    const daysLeft = Math.ceil(
-                        diffTime / (1000 * 60 * 60 * 24)
-                    );
 
                     if (daysLeft === 7) {
                         await sendEmail({
@@ -43,7 +49,7 @@ This is a friendly reminder that your gym membership will expire in 7 days.
 </p>
 
 <p>
-Expiry Date: ${expiryDate.toDateString()}
+Expiry Date: ${formatDate(expiryDate)}
 </p>
 
 <p>
@@ -71,7 +77,7 @@ To continue your workouts without interruption, please renew your membership soo
 </p>
 
 <p>
-Expiry Date: ${expiryDate.toDateString()}
+Expiry Date: ${formatDate(expiryDate)}
 </p>
 
 <p>
@@ -95,7 +101,7 @@ Renew your membership today to continue accessing your gym services.
 </p>
 
 <p>
-Expiry Date: ${expiryDate.toDateString()}
+Expiry Date: ${formatDate(expiryDate)}
 </p>
 
 <p>

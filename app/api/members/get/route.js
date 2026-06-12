@@ -2,6 +2,7 @@ import connectDB from "@/lib/db";
 import { NextResponse } from "next/server";
 import Member from "@/models/Member";
 import { currentUser } from "@clerk/nextjs/server";
+import { getIstDateKey } from "@/lib/date";
 
 export async function GET(req) {
     try {
@@ -26,30 +27,12 @@ export async function GET(req) {
         const filter = url.searchParams.get("filter") || "";
         const search = decodeURIComponent(url.searchParams.get("search") || "");
 
-        const now = new Date();
-
-        const fourDaysLater = new Date();
-        fourDaysLater.setDate(fourDaysLater.getDate() + 4);
+        const todayKey = getIstDateKey(new Date());
+        const fourDaysLaterKey = getIstDateKey(new Date(Date.now() + 4 * 24 * 60 * 60 * 1000));
 
         let query = {
             ownerClerkId: user.id,
         };
-
-        // Filtering
-        if (filter === "expired") {
-            query.expiryDate = {
-                $lt: now,
-            };
-        } else if (filter === "expiring_soon") {
-            query.expiryDate = {
-                $gte: now,
-                $lte: fourDaysLater,
-            };
-        } else if (filter === "active") {
-            query.expiryDate = {
-                $gt: fourDaysLater,
-            };
-        }
 
         // Search
         if (search.trim()) {
@@ -60,24 +43,17 @@ export async function GET(req) {
             ];
         }
 
-        const totalMembers = await Member.countDocuments(query);
-
-        const totalPages = Math.ceil(totalMembers / limit);
-
         let members = await Member.find(query)
             .sort({ _id: -1 })
-            .limit(limit)
-            .skip((page - 1) * limit)
             .lean();
 
         members = members.map((member) => {
             let status = "active";
+            const expiryKey = getIstDateKey(member.expiryDate);
 
-            if (now > new Date(member.expiryDate)) {
+            if (expiryKey && expiryKey < todayKey) {
                 status = "expired";
-            } else if (
-                new Date(member.expiryDate) <= fourDaysLater
-            ) {
+            } else if (expiryKey && expiryKey <= fourDaysLaterKey) {
                 status = "expiring_soon";
             }
 
@@ -87,11 +63,23 @@ export async function GET(req) {
             };
         });
 
+        if (filter === "expired") {
+            members = members.filter((member) => member.status === "expired");
+        } else if (filter === "expiring_soon") {
+            members = members.filter((member) => member.status === "expiring_soon");
+        } else if (filter === "active") {
+            members = members.filter((member) => member.status === "active");
+        }
+
+        const totalMembers = members.length;
+        const totalPages = Math.ceil(totalMembers / limit);
+        const paginatedMembers = members.slice((page - 1) * limit, page * limit);
+
         return NextResponse.json(
             {
                 success: true,
                 message: "Members fetched successfully",
-                members,
+                members: paginatedMembers,
                 totalMembers,
                 totalPages,
                 currentPage: page,
