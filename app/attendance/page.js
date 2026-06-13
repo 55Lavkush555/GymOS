@@ -35,10 +35,23 @@ export default function AttendancePage() {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      const res = await fetch("/api/attendance/get");
-      const result = await res.json();
-      setMembers(result.attendance);
-      setLoading(false);
+      try {
+        const res = await fetch("/api/attendance/get");
+
+        if (!res.ok) {
+          toast.error("Failed to fetch members");
+          throw new Error("Failed to fetch members");
+        }
+
+        const result = await res.json();
+        setMembers(result.attendance);
+        setLoading(false);
+      }
+      catch (err) {
+        toast.error(err.message);
+        setLoading(false);
+        setMembers([])
+      }
     }
     fetchMembers()
   }, [])
