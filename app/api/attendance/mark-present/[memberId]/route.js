@@ -1,6 +1,6 @@
 import connectDB from "@/lib/db";
 import { NextResponse } from "next/server";
-import Attendance from "@/models/Attendence";
+import Attendance from "@/models/Attendance";
 import { currentUser } from "@clerk/nextjs/server";
 
 export async function GET(request, { params }) {

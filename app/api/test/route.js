@@ -1,7 +1,7 @@
 import connectDB from "@/lib/db";
 import { NextResponse } from "next/server";
 import Member from "@/models/Member";
-import Attendance from "@/models/Attendence";
+import Attendance from "@/models/Attendance";
 import User from "@/models/User";
 
 export async function GET() {

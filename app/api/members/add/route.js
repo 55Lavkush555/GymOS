@@ -2,7 +2,7 @@ import connectDB from "@/lib/db";
 import Member from "@/models/Member";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
-import Attendance from "@/models/Attendence";
+import Attendance from "@/models/Attendance";
 
 export async function POST(req) {
     try {

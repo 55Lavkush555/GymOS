@@ -1,5 +1,6 @@
 import connectDB from "@/lib/db";
-import Attendance from "@/models/Attendence";
+import Attendance from "@/models/Attendance";
+import "@/models/Member";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import { getIstDateKey } from "@/lib/date";
@@ -32,6 +33,6 @@ export async function GET() {
         return NextResponse.json({ success: true, message: "Attendance data fetched successfully", attendance }, { status: 200 });
     } catch (error) {
         console.log(error);
-        return NextResponse.json({ error: "Internal server error", message: err.message }, { status: 500 });
+        return NextResponse.json({ error: "Internal server error", message: error.message }, { status: 500 });
     }
 }

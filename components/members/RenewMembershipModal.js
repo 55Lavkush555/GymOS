@@ -26,7 +26,7 @@ export function RenewMembershipModal({
   member,
   onSaved = () => {},
 }) {
-  const [form, setForm] = useState({ startDate: "", expiryDate: "" });
+  const [form, setForm] = useState({ startDate: "", expiryDate: "", amountPaid: 0 });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -41,6 +41,7 @@ export function RenewMembershipModal({
     setForm({
       startDate: formatDateForInput(member.startDate),
       expiryDate: formatDateForInput(member.expiryDate),
+      amountPaid: member.amountPaid,
     });
     setError("");
     setSaving(false);
@@ -93,6 +94,7 @@ export function RenewMembershipModal({
         body: JSON.stringify({
           startDate: form.startDate,
           expiryDate: form.expiryDate,
+          amountPaid: form.amountPaid,
         }),
       });
 
@@ -155,6 +157,18 @@ export function RenewMembershipModal({
                 onChange={handleChange}
                 required
                 className={inputCls}
+              />
+            </FormField>
+
+            <FormField label="Amount Paid (₹INR)" required>
+              <input
+                name="amountPaid"
+                type="number"
+                value={form.amountPaid}
+                onChange={handleChange}
+                required
+                className={inputCls}
+                placeholder="1000"
               />
             </FormField>
           </div>
