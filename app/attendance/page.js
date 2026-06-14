@@ -32,6 +32,7 @@ export default function AttendancePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isMarking, setIsMarking] = useState(false);
+  const normalizedSearch = search.trim().toLowerCase();
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -59,16 +60,18 @@ export default function AttendancePage() {
 
   const filteredMembers = useMemo(() => {
     return members.filter((member) => {
-      const matchesSearch = member.memberId.name.toLowerCase().includes(search.toLowerCase());
+      const memberName = member.memberId?.name ?? "";
+      const matchesSearch = memberName.toLowerCase().includes(normalizedSearch);
       const matchesFilter =
         statusFilter === "all" || member.attendanceStatus === statusFilter;
       return matchesSearch && matchesFilter;
     });
-  }, [members, search, statusFilter]);
+  }, [members, normalizedSearch, statusFilter]);
 
   const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(filteredMembers.length / pageSize));
-  const paginatedMembers = filteredMembers.slice((page - 1) * pageSize, page * pageSize);
+  const currentPage = Math.min(page, totalPages);
+  const paginatedMembers = filteredMembers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const totals = useMemo(() => {
     const totalMembers = members.length;
@@ -134,8 +137,6 @@ export default function AttendancePage() {
     setSelectedMember(null);
   };
 
-  const currentPageLabel = `Page ${page} of ${totalPages}`;
-
   return (
     <DashboardLayout>
       <div className="space-y-5 lg:space-y-6">
@@ -160,7 +161,10 @@ export default function AttendancePage() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <SearchInput
               value={search}
-              onChange={(value) => setSearch(value)}
+              onChange={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
               placeholder="Search Member..."
               className="w-full lg:max-w-md"
               handleSearch={handleSearch}
@@ -248,16 +252,18 @@ export default function AttendancePage() {
                 size="sm"
                 variant="outline"
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={page === 1}
+                disabled={currentPage === 1}
               >
                 <ChevronLeft size={16} />
               </Button>
-              <span className="text-xs font-medium text-[var(--foreground)]">{currentPageLabel}</span>
+              <span className="text-xs font-medium text-[var(--foreground)]">
+                {`Page ${currentPage} of ${totalPages}`}
+              </span>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={page === totalPages}
+                disabled={currentPage === totalPages}
               >
                 <ChevronRight size={16} />
               </Button>
